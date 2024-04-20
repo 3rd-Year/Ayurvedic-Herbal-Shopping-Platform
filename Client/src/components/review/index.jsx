@@ -1,75 +1,79 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import { Rating, Typography,Button } from '@mui/material';
-import { toast } from 'react-toastify';
-import axios from 'axios';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import { Rating, Typography, Button } from "@mui/material";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useState } from "react";
 // import {  } from 'bootstrap';
 
 export default function ProductReview() {
-    const [review, setReview] = React.useState({
-        rating: 0,
-        description: "",
-      });
+  const [rating, setRating] = useState(-1);
+  const [description, setDescription] = useState("");
 
-    const onClickAdd = async (e) => {
-        e.preventDefault();
-        console.log(review);
-        if (
-          review.name === "" ||
-          review.price === "" 
-        
-        ) {
-          alert("Fill all the fields");
-        } else {
-          try {
-            const res = await axios.post(
-              "http://localhost:5005/api/review/create",
-              review
-            );
-            console.log(res);
-            toast.success(res.data.message);
-          } catch (err) {
-            console.log(err);
-            toast.error(err.response.data.message);
-          }
-        }
-      };
+  const user = localStorage.getItem("FName");
+
+  const onClickAdd = async (e) => {
+    e.preventDefault();
+    // console.log(review);
+
+    let reviewObject = {
+      user: user,
+      rate: rating,
+      description: description,
+    };
+
+    if (reviewObject.rate == -1 || reviewObject.description == "") {
+      alert("Fill all the fields");
+    } else {
+      try {
+        console.log("-----------------");
+        const response = await axios.post(
+          "http://localhost:5005/api/review/create",
+          reviewObject,
+        );
+
+        console.log("Res: ", response);
+      } catch (err) {
+        console.log(err);
+        toast.error(err.response.data.message);
+      }
+    }
+
+    window.location.reload();
+  };
   return (
     <Box
       sx={{
-        width:'50%',
-        mt:'40px'
-,        display: 'flex',
-         justifyContent: 'left',
-         flexDirection:'column',
-        alignItems: 'left',
-        '& > :not(style)': { m: 1 },
+        width: "50%",
+        mt: "40px",
+        display: "flex",
+        justifyContent: "left",
+        flexDirection: "column",
+        alignItems: "left",
+        "& > :not(style)": { m: 1 },
       }}
     >
       <Typography component="legend">Rating</Typography>
-<Rating
-  name="simple-controlled"
-  
-  value={review.rating}
-  onChange={(event, newValue) => {
-    setReview({...review, rating:newValue});
-  }}
-/>  
-     
+      <Rating
+        name="simple-controlled"
+        value={rating}
+        onChange={(e) => setRating(e.target.value)}
+      />
+
       <TextField
         fullWidth="20"
         Height="20"
         helperText=" "
         id="demo-helper-text-aligned-no-helper"
         label="Description"
-        defaultValue={review.description}
-        onChange={(event) => {
-            setReview({...review, description:event.target.value});
-          }}
+        defaultValue={description}
+        onChange={(e) => setDescription(e.target.value)}
       />
 
-      <Button variant="contained" onClick={onClickAdd}>Add</Button>
+      <Button variant="contained" onClick={onClickAdd}>
+        Add
+      </Button>
     </Box>
   );
 }
