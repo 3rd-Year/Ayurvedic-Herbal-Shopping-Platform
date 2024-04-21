@@ -28,7 +28,7 @@ const AdminDashboard = ({
       <NewArrivals />
       <Discount />
       <Shop shopItems={shopItems} addToCart={addToCart} /> */}
-			<Management />
+			{/* <Management /> */}
 			<Annocument />
 			<Wrapper />
 		</>

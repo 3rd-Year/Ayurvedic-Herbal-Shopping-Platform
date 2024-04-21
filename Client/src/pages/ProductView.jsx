@@ -1,6 +1,7 @@
 import { Container, Grid, Stack, Typography, Button, Box } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { ToastContainer, toast, Flip } from "react-toastify";
 import axios from "axios";
 import ProductReview from "../components/review";
 import DisplayRating from "../components/DisplayRating";
@@ -11,6 +12,8 @@ const ProductView = ({ addToCart }) => {
   const [review, setReview] = useState(null);
   const [error, setError] = useState(null);
   const [open, setOpen] = React.useState(false);
+
+  const loggedIn = localStorage.getItem("login");
 
   useEffect(() => {
     axios
@@ -40,35 +43,40 @@ const ProductView = ({ addToCart }) => {
   }, [id]);  // Dependency array now depends on productId
 
   const handleDelete = async (id) => {
-    try {
-      axios
-        .delete(`http://localhost:5005/api/review/delete/${id}`)
-        .then((res) => {
-          window.location.reload();
-        });
-      // console.log(data);
-      setOpen(false);
-      // toast.success(res.data.message, {
-      //   position: "top-right",
-      //   autoClose: 5000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      // });
-    } catch (error) {
-      setOpen(false);
-      // toast.error(error.response.data.message, {
-      //   position: "top-right",
-      //   autoClose: 5000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      // });
+    if (loggedIn) {
+      try {
+        axios
+          .delete(`http://localhost:5005/api/review/delete/${id}`)
+          .then((res) => {
+            window.location.reload();
+          });
+        // console.log(data);
+        setOpen(false);
+        // toast.success(res.data.message, {
+        //   position: "top-right",
+        //   autoClose: 5000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        // });
+      } catch (error) {
+        setOpen(false);
+        // toast.error(error.response.data.message, {
+        //   position: "top-right",
+        //   autoClose: 5000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        // });
+      }
+    } else {
+      toast.info('You need to login first');
     }
+
   };
 
   console.log("ssss", product);
@@ -104,7 +112,13 @@ const ProductView = ({ addToCart }) => {
             variant="contained"
             color="error"
             sx={{ mt: "5rem" }}
-            onClick={() => addToCart(product)}
+            onClick={() => {
+              if (loggedIn) {
+                addToCart(product);
+              } else {
+                toast.info('You need to login first');
+              }
+            }}
           >
             Add Cart
           </Button>
@@ -166,6 +180,20 @@ const ProductView = ({ addToCart }) => {
           <ProductReview />
         </Grid>
       </Grid>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        transition={Flip}
+        pauseOnHover={false}
+        theme="colored"
+      />
     </Container>
   );
 };

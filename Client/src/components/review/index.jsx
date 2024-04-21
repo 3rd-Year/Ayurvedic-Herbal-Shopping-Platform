@@ -2,7 +2,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Rating, Typography, Button } from "@mui/material";
-import { toast } from "react-toastify";
+import { ToastContainer, toast, Flip } from "react-toastify";
 import axios from "axios";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
@@ -14,34 +14,39 @@ export default function ProductReview() {
   const [description, setDescription] = useState("");
 
   const user = localStorage.getItem("FName");
+  const loggedIn = localStorage.getItem("login");
 
   const onClickAdd = async (e) => {
-    e.preventDefault();
+    console.log("Login: ", loggedIn);
+    if(loggedIn){
+      e.preventDefault();
 
-    let reviewObject = {
-      productId: id,
-      user: user,
-      rate: rating,
-      description: description,
-    };
-
-    if (reviewObject.rate == -1 || reviewObject.description == "") {
-      alert("Fill all the fields");
-    } else {
-      try {
-        const response = await axios.post(
-          "http://localhost:5005/api/review/create",
-          reviewObject,
-        );
-
-        console.log("Res: ", response);
-      } catch (err) {
-        console.log(err);
-        toast.error(err.response.data.message);
+      let reviewObject = {
+        productId: id,
+        user: user,
+        rate: rating,
+        description: description,
+      };
+  
+      if (reviewObject.rate == -1 || reviewObject.description == "") {
+        toast.warning("Add a rating and a description to add");
+      } else {
+        try {
+          const response = await axios.post(
+            "http://localhost:5005/api/review/create",
+            reviewObject,
+          );
+          window.location.reload();
+          console.log("Res: ", response);
+        } catch (err) {
+          console.log(err);
+          toast.error(err.response.data.message);
+        }
       }
-    }
-
-    window.location.reload();
+      
+    } else {
+      toast.info('You need to login first');
+    }    
   };
   return (
     <Box
@@ -73,8 +78,22 @@ export default function ProductReview() {
       />
 
       <Button variant="contained" onClick={onClickAdd}>
-        Add
+        Add Review
       </Button>
+
+      <ToastContainer
+				position="top-right"
+				autoClose={1000}
+				hideProgressBar={false}
+				newestOnTop={false}
+				closeOnClick
+				rtl={false}
+				pauseOnFocusLoss
+				draggable
+				transition={Flip}
+				pauseOnHover={false}
+				theme="colored"
+			/>
     </Box>
   );
 }

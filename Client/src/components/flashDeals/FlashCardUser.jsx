@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { ToastContainer, toast, Flip } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 const SampleNextArrow = (props) => {
 	const { onClick } = props;
@@ -32,6 +32,8 @@ const FlashCardUser = ({ productItems, addToCart }) => {
 	const [product, setProduct] = React.useState([]);
 	const [productImage, setImage] = React.useState(false);
 	const [deleteId, setDeleteId] = useState();
+
+	const loggedIn = localStorage.getItem("login");
 
 	// const UpdateProduct =(id)=>{
 	//   navigate (`/edit/${id}`)
@@ -159,9 +161,12 @@ const FlashCardUser = ({ productItems, addToCart }) => {
                     </button> */}
 
 										<button
-											onClick={() =>
-												addToCart(product)
-											}>
+											onClick={() => {
+												if (loggedIn) { addToCart(product); } else {
+													toast.info('You need to login first');
+												}
+											}}
+										>
 											<i className="fa fa-plus"></i>
 										</button>
 									</div>
@@ -187,6 +192,19 @@ const FlashCardUser = ({ productItems, addToCart }) => {
           </Typography>
         </Box>
       </Modal> */}
+	  <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        transition={Flip}
+        pauseOnHover={false}
+        theme="colored"
+      />
 		</>
 	);
 };
