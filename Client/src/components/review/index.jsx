@@ -5,9 +5,11 @@ import { Rating, Typography, Button } from "@mui/material";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 // import {  } from 'bootstrap';
 
 export default function ProductReview() {
+  const { id } = useParams();
   const [rating, setRating] = useState(-1);
   const [description, setDescription] = useState("");
 
@@ -15,9 +17,9 @@ export default function ProductReview() {
 
   const onClickAdd = async (e) => {
     e.preventDefault();
-    // console.log(review);
 
     let reviewObject = {
+      productId: id,
       user: user,
       rate: rating,
       description: description,
@@ -27,7 +29,6 @@ export default function ProductReview() {
       alert("Fill all the fields");
     } else {
       try {
-        console.log("-----------------");
         const response = await axios.post(
           "http://localhost:5005/api/review/create",
           reviewObject,

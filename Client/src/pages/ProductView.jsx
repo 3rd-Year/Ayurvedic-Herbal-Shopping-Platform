@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ProductReview from "../components/review";
 import DisplayRating from "../components/DisplayRating";
+
 const ProductView = ({ addToCart }) => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -22,17 +23,21 @@ const ProductView = ({ addToCart }) => {
       });
   }, [id]);
 
-  //get review data
   useEffect(() => {
+    if (!id) {
+      console.log("Product ID is missing");
+      return;
+    }
+
     axios
-      .get(`http://localhost:5005/api/review/getAll`)
+      .get(`http://localhost:5005/api/review/getAll?productId=${id}`)
       .then((response) => {
-        setReview(response.data.data);
+        setReview(response.data.data);  // Make sure the response has the data in `data.data`
       })
       .catch((error) => {
-        setError(error.response.data);
+        console.log("An unknown error occurred");
       });
-  }, []);
+  }, [id]);  // Dependency array now depends on productId
 
   const handleDelete = async (id) => {
     try {
